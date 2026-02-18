@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
 using System.Linq;
 using System.Web;
 
@@ -13,9 +16,11 @@ namespace Foodie
             return ConfigurationManager.ConnectionStrings["cs"].ConnectionString;
         }
     }
-
+    
     public class Utils
     {
+        SqlConnection con;
+        SqlCommand cmd;
         public static bool IsValidExtension(string fileName)
         {
             bool isValid = false;
@@ -32,7 +37,7 @@ namespace Foodie
             return isValid;
         }
 
-         // Setting default image if there is no image for any job.
+        // Setting default image if there is no image for any job.
         public static string GetImageUrl(Object url)
         {
             string url1 = "";
@@ -45,6 +50,40 @@ namespace Foodie
                 url1 = string.Format("../{0}", url);
             }
             return url1;
+        }
+
+        protected bool updateCartQuantity(int productId, int quantity,int userId)
+        {
+            bool isUpdated = false;
+            con = new SqlConnection(Connection.GetConnectionString());
+            cmd = new SqlCommand("Cart_Crud", con);
+            cmd.Parameters.AddWithValue("@Action", "UPDATE");
+            cmd.Parameters.AddWithValue("@ProductId", productId);
+            cmd.Parameters.AddWithValue("@Quantity", 1);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.CommandType = CommandType.StoredProcedure;
+            try
+            {
+                con.Open();
+                cmd.ExecuteNonQuery();
+                isUpdated = true;
+
+            }
+            catch (Exception ex)
+            {
+                isUpdated = false;
+                System.Web.HttpContext.Current.Response.Write("<script>alert('Error - " + ex.Message + "')</script>");
+            }
+            finally
+            {
+                con.Close();
+            }
+            return isUpdated;
+        }
+
+        internal bool updateCartQuantity(int v1, int v2, int v3)
+        {
+            throw new NotImplementedException();
         }
     }
 }
