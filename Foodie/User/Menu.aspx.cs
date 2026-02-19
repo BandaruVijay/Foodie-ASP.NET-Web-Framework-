@@ -51,49 +51,51 @@ namespace Foodie.User
             rProducts.DataBind();
         }
 
-        protected void rProducts_ItemCommand(object sender, CommandEventArgs e)
+        protected void rProducts_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             if (Session["userId"] != null)
             {
                 bool isCartItemUpdated = false;
-                int i = isItemExistInCart(Convert.ToInt32(e.CommandArgument));
-                if (i == 0) 
-                {
-                    //Adding New Item to Cart
-                    con = new SqlConnection(Connection.GetConnectionString());
-                    cmd = new SqlCommand("Cart_Crud", con);
-                    cmd.Parameters.AddWithValue("@Action", "ACTIVEPROD");
-                    cmd.Parameters.AddWithValue("@ProductId", e.CommandArgument);
-                    cmd.Parameters.AddWithValue("@Quantity", 1);
-                    cmd.Parameters.AddWithValue("@UserId", Session["userId"]);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    try
-                    {
-                        con.Open();
-                        cmd.ExecuteNonQuery();
+                int productId = Convert.ToInt32(e.CommandArgument);
+                int currentQty = isItemExistInCart(productId);
 
-                    }
-                    catch (Exception ex)
+                if (currentQty == 0)
+                {
+                    // Adding New Item to Cart
+                    using (SqlConnection con = new SqlConnection(Connection.GetConnectionString()))
+                    using (SqlCommand cmd = new SqlCommand("Cart_Curd", con))
                     {
-                        Response.Write("<script>alert('Error - " + ex.Message + "')</script>");
-                    }
-                    finally
-                    {
-                        con.Close();
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Action", "INSERT");   // FIXED
+                        cmd.Parameters.AddWithValue("@ProductId", productId);
+                        cmd.Parameters.AddWithValue("@Quantity", 1);
+                        cmd.Parameters.AddWithValue("@UserId", Session["userId"]);
+
+                        try
+                        {
+                            con.Open();
+                            cmd.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            Response.Write("<script>alert('Error - " + ex.Message + "')</script>");
+                        }
                     }
                 }
                 else
                 {
-                    //Updating Existing Item in Cart
+                    // Updating Existing Item in Cart
                     Utils utils = new Utils();
-                    isCartItemUpdated = utils.updateCartQuantity(i + 1 ,Convert.ToInt32(e.CommandArgument), 
+                    isCartItemUpdated = utils.UpdateCartQuantity(productId, currentQty + 1,
                         Convert.ToInt32(Session["userId"]));
-                    lblMsg.Visible=true;
-                    lblMsg.Text = "item Add Successfully in your Cart";
-                    lblMsg.CssClass = "alert alert-success";
-                    Response.AddHeader("REFRESH", "1;URL=Cart.aspx"); 
                 }
 
+                lblMsg.Visible = true;
+                lblMsg.Text = "Item added successfully to your Cart";
+                lblMsg.CssClass = "alert alert-success";
+
+                // Redirect to Cart page after 1 second
+                Response.AddHeader("REFRESH", "1;URL=Cart.aspx");
             }
             else
             {
@@ -101,10 +103,11 @@ namespace Foodie.User
             }
         }
 
+
         int isItemExistInCart(int productId)
         {
             con = new SqlConnection(Connection.GetConnectionString());
-            cmd = new SqlCommand("Cart_Crud", con);
+            cmd = new SqlCommand("Cart_Curd", con);
             cmd.Parameters.AddWithValue("@Action", "GETBYID");
             cmd.Parameters.AddWithValue("@ProductId", productId);
             cmd.Parameters.AddWithValue("@UserId", Session["userId"]);

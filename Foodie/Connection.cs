@@ -52,11 +52,11 @@ namespace Foodie
             return url1;
         }
 
-        protected bool updateCartQuantity(int productId, int quantity,int userId)
+        public bool UpdateCartQuantity(int productId, int quantity,int userId)
         {
             bool isUpdated = false;
             con = new SqlConnection(Connection.GetConnectionString());
-            cmd = new SqlCommand("Cart_Crud", con);
+            cmd = new SqlCommand("Cart_Curd", con);
             cmd.Parameters.AddWithValue("@Action", "UPDATE");
             cmd.Parameters.AddWithValue("@ProductId", productId);
             cmd.Parameters.AddWithValue("@Quantity", 1);
@@ -81,9 +81,6 @@ namespace Foodie
             return isUpdated;
         }
 
-        internal bool updateCartQuantity(int v1, int v2, int v3)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }
