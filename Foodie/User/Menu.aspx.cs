@@ -56,45 +56,43 @@ namespace Foodie.User
             if (Session["userId"] != null)
             {
                 bool isCartItemUpdated = false;
-                int productId = Convert.ToInt32(e.CommandArgument);
-                int currentQty = isItemExistInCart(productId);
-
-                if (currentQty == 0)
+                int i = isItemExistInCart(Convert.ToInt32(e.CommandArgument));
+                if (i == 0)
                 {
                     // Adding New Item to Cart
-                    using (SqlConnection con = new SqlConnection(Connection.GetConnectionString()))
-                    using (SqlCommand cmd = new SqlCommand("Cart_Curd", con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@Action", "INSERT");   // FIXED
-                        cmd.Parameters.AddWithValue("@ProductId", productId);
-                        cmd.Parameters.AddWithValue("@Quantity", 1);
-                        cmd.Parameters.AddWithValue("@UserId", Session["userId"]);
+                    con = new SqlConnection(Connection.GetConnectionString());
+                    cmd = new SqlCommand("Cart_Curd", con);
+                    cmd.Parameters.AddWithValue("@Action", "INSERT");
+                    cmd.Parameters.AddWithValue("@ProductId", e.CommandArgument);
+                    cmd.Parameters.AddWithValue("@Quantity", 1);
+                    cmd.Parameters.AddWithValue("@UserId", Session["userId"]);
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                        try
-                        {
-                            con.Open();
-                            cmd.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            Response.Write("<script>alert('Error - " + ex.Message + "')</script>");
-                        }
+                    try
+                    {
+                        con.Open();
+                        cmd.ExecuteNonQuery();
                     }
+                    catch (Exception ex)
+                    {
+                        Response.Write("<script>alert('Error - " + ex.Message + " ');</script>");
+                    }
+                    finally
+                    {
+                        con.Close();
+                    }
+
                 }
                 else
                 {
                     // Updating Existing Item in Cart
                     Utils utils = new Utils();
-                    isCartItemUpdated = utils.UpdateCartQuantity(productId, currentQty + 1,
+                    isCartItemUpdated = utils.updateCartQuantity(i + 1, Convert.ToInt32(e.CommandArgument),
                         Convert.ToInt32(Session["userId"]));
                 }
-
                 lblMsg.Visible = true;
                 lblMsg.Text = "Item added successfully to your Cart";
                 lblMsg.CssClass = "alert alert-success";
-
-                // Redirect to Cart page after 1 second
                 Response.AddHeader("REFRESH", "1;URL=Cart.aspx");
             }
             else

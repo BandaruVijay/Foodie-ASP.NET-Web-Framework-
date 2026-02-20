@@ -52,14 +52,14 @@ namespace Foodie
             return url1;
         }
 
-        public bool UpdateCartQuantity(int productId, int quantity,int userId)
+        public bool updateCartQuantity(int quantity, int productId, int userId)
         {
             bool isUpdated = false;
             con = new SqlConnection(Connection.GetConnectionString());
             cmd = new SqlCommand("Cart_Curd", con);
             cmd.Parameters.AddWithValue("@Action", "UPDATE");
             cmd.Parameters.AddWithValue("@ProductId", productId);
-            cmd.Parameters.AddWithValue("@Quantity", 1);
+            cmd.Parameters.AddWithValue("@Quantity", quantity);
             cmd.Parameters.AddWithValue("@UserId", userId);
             cmd.CommandType = CommandType.StoredProcedure;
             try
@@ -72,7 +72,7 @@ namespace Foodie
             catch (Exception ex)
             {
                 isUpdated = false;
-                System.Web.HttpContext.Current.Response.Write("<script>alert('Error - " + ex.Message + "')</script>");
+                System.Web.HttpContext.Current.Response.Write("<script>alert('Error - " + ex.Message + " ');</script>");
             }
             finally
             {

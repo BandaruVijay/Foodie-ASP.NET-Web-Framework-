@@ -102,13 +102,12 @@ $(".client_owl-carousel").owlCarousel({
 
 //'use strict':
 (function ($) {
-    //-------------------------
-    // Quantity change
-    //-------------------------
+    /*-------------------------
+       Quantity change
+    -------------------------*/
     var proQty = $('.pro-qty');
-    proQty.prepend('<span class="dec qtybtn">-</span>'); /*style = "color:white"*/
+    proQty.prepend('<span class="dec qtybtn" >-</span>'); /*style = "color:white"*/
     proQty.append('<span class="inc qtybtn">+</span>'); /*style = "color:white"*/
-
     proQty.on('click', '.qtybtn', function () {
         var $button = $(this);
         var oldValue = $button.parent().find('input').val();
@@ -129,6 +128,7 @@ $(".client_owl-carousel").owlCarousel({
         }
         $button.parent().find('input').val(newVal);
     });
+
 })(jQuery);
 
-// For Quantity Change
+/*For Quantity Change*/

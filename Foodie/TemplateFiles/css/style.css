@@ -6,13 +6,14 @@ body {
   overflow-x: hidden;
 }
 
-/* Added For Product Quantity increasing & decreasing */
+/*Added For Product Quantity increasing & decreasing*/
 .product__details__option {
     overflow: hidden;
 }
 
     .product__details__option .quantity {
         overflow: hidden;
+        /*float: left;*/
         margin-right: 20px;
     }
 
@@ -20,7 +21,7 @@ body {
         height: 50px;
         width: 140px;
         border: 1px solid #e1e1e1;
-        padding: 20px;
+        padding: 0 20px;
     }
 
         .product__details__option .pro-qty .qtybtn {
@@ -49,8 +50,7 @@ body {
             float: left;
             text-align: center;
         }
-
-/* Added For Product Quantity increasing & decreasing */
+/*Added For Product Quantity increasing & decreasing*/
 
 
 
